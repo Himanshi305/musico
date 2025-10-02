@@ -1,28 +1,40 @@
 "use client";
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function PlayBar() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(240); // 4 minutes in seconds
+  const [duration, setDuration] = useState(180); // 3 minutes demo
   const [currentSong, setCurrentSong] = useState({
     title: "Midnight Dreams",
     artist: "Luna Eclipse", 
-    album: "Nocturnal Vibes",
-    cover: "/api/placeholder/60/60"
+    album: "Nocturnal Vibes"
   });
 
-  const audioRef = useRef(null);
+  // Simple demo mode - simulate playback
+  useEffect(() => {
+    let interval;
+    if (isPlaying && currentTime < duration) {
+      interval = setInterval(() => {
+        setCurrentTime(prev => {
+          const newTime = prev + 1;
+          if (newTime >= duration) {
+            setIsPlaying(false);
+            return 0; // Reset to beginning
+          }
+          return newTime;
+        });
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [isPlaying, currentTime, duration]);
 
-  // Format time in MM:SS
-  const formatTime = (time) => {
-    const minutes = Math.floor(time / 60);
-    const seconds = Math.floor(time % 60);
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-  };
-
-  // Handle play/pause
-  const togglePlay = () => {
+  // Simple toggle play/pause
+  const togglePlay = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log('Play button clicked, current state:', isPlaying);
+    console.log('Event:', e);
     setIsPlaying(!isPlaying);
   };
 
@@ -35,21 +47,35 @@ export default function PlayBar() {
     setCurrentTime(newTime);
   };
 
-  // Simulate time progress when playing
-  useEffect(() => {
-    let interval;
-    if (isPlaying && currentTime < duration) {
-      interval = setInterval(() => {
-        setCurrentTime(prev => Math.min(prev + 1, duration));
-      }, 1000);
+  // Previous track
+  const handlePrevious = () => {
+    if (currentTime > 3) {
+      setCurrentTime(0);
+    } else {
+      // In a real app, this would go to previous song
+      setCurrentTime(0);
     }
-    return () => clearInterval(interval);
-  }, [isPlaying, currentTime, duration]);
+  };
 
-  const progressPercentage = (currentTime / duration) * 100;
+  // Next track  
+  const handleNext = () => {
+    // In a real app, this would go to next song
+    setCurrentTime(0);
+    setIsPlaying(false);
+  };
+
+  // Format time in MM:SS
+  const formatTime = (time) => {
+    if (!time || isNaN(time)) return "0:00";
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  };
+
+  const progressPercentage = duration > 0 ? (currentTime / duration) * 100 : 0;
 
   return (
-    <div className="h-20 bg-black/80 backdrop-blur-md border-t border-white/10">
+    <div className="h-20 bg-black/80 backdrop-blur-md border-t border-white/10 z-50 relative">
       <div className="flex items-center justify-between h-full px-4">
         
         {/* Left: Current song info */}
@@ -60,6 +86,8 @@ export default function PlayBar() {
           <div className="text-white">
             <h4 className="text-sm font-medium truncate">{currentSong.title}</h4>
             <p className="text-xs text-gray-400 truncate">{currentSong.artist}</p>
+            {/* Debug indicator */}
+            <p className="text-xs text-green-400">State: {isPlaying ? 'Playing' : 'Paused'}</p>
           </div>
           <button className="text-gray-400 hover:text-white transition-colors">
             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -69,10 +97,14 @@ export default function PlayBar() {
         </div>
 
         {/* Center: Player controls */}
-        <div className="flex flex-col items-center space-y-2 w-1/2">
+        <div className="flex flex-col items-center space-y-2 w-1/2 pointer-events-auto">
           {/* Control buttons */}
-          <div className="flex items-center space-x-4">
-            <button className="text-gray-400 hover:text-white transition-colors">
+          <div className="flex items-center space-x-4 pointer-events-auto">
+            <button 
+              onClick={handlePrevious}
+              className="text-gray-400 hover:text-white transition-colors"
+              type="button"
+            >
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M8.445 14.832A1 1 0 0010 14v-2.798l5.445 3.63A1 1 0 0017 14V6a1 1 0 00-1.555-.832L10 8.798V6a1 1 0 00-1.555-.832l-6 4a1 1 0 000 1.664l6 4z" />
               </svg>
@@ -80,7 +112,15 @@ export default function PlayBar() {
             
             <button 
               onClick={togglePlay}
-              className="bg-white text-black rounded-full p-2 hover:scale-105 transition-transform"
+              className="bg-white text-black rounded-full p-2 hover:scale-105 transition-transform focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 cursor-pointer pointer-events-auto z-10 relative"
+              type="button"
+              onMouseDown={(e) => {
+                console.log('Button mouse down');
+                e.preventDefault();
+              }}
+              onMouseUp={(e) => {
+                console.log('Button mouse up');
+              }}
             >
               {isPlaying ? (
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -93,7 +133,11 @@ export default function PlayBar() {
               )}
             </button>
             
-            <button className="text-gray-400 hover:text-white transition-colors">
+            <button 
+              onClick={handleNext}
+              className="text-gray-400 hover:text-white transition-colors"
+              type="button"
+            >
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M4.555 5.168A1 1 0 003 6v8a1 1 0 001.555.832L10 11.202V14a1 1 0 001.555.832l6-4a1 1 0 000-1.664l-6-4A1 1 0 0010 6v2.798l-5.445-3.63z" />
               </svg>
@@ -122,13 +166,22 @@ export default function PlayBar() {
 
         {/* Right: Additional controls */}
         <div className="flex items-center space-x-3 w-1/4 justify-end">
-          <button className="text-gray-400 hover:text-white transition-colors">
+          {/* Playing indicator */}
+          {isPlaying && (
+            <div className="flex items-center space-x-1">
+              <div className="w-1 h-3 bg-green-400 rounded-full animate-pulse"></div>
+              <div className="w-1 h-2 bg-green-400 rounded-full animate-pulse" style={{animationDelay: '0.2s'}}></div>
+              <div className="w-1 h-4 bg-green-400 rounded-full animate-pulse" style={{animationDelay: '0.4s'}}></div>
+            </div>
+          )}
+          
+          <button className="text-gray-400 hover:text-white transition-colors" type="button">
             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" clipRule="evenodd" />
             </svg>
           </button>
 
-          <button className="text-gray-400 hover:text-white transition-colors">
+          <button className="text-gray-400 hover:text-white transition-colors" type="button">
             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
             </svg>
