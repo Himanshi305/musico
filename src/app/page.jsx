@@ -4,6 +4,7 @@ import Navbar from './components/navbar';
 import CircularSystem from './components/CircularSystem';
 import GradientBackground from './components/GradientBackground';
 import PlaylistSidebar from './components/PlaylistSidebar';
+import PlayBar from './components/PlayBar';
 
 export default function Home() {
   const [selectedColor, setSelectedColor] = useState('red'); // Default to red
@@ -14,11 +15,11 @@ export default function Home() {
 
   return (
     <GradientBackground dynamicColor={selectedColor}>
-      <div className="min-h-screen relative">
+      <div className="min-h-screen relative pb-20"> {/* Added pb-20 for PlayBar space */}
         <Navbar />
         
         {/* Main content area with sidebar */}
-        <div className="relative flex h-[93vh] pt-16 left-10 top-5"> {/* pt-16 to account for navbar height */}
+        <div className="relative flex h-[calc(100vh-150px)] pt-16 left-4 top-5"> {/* Adjusted height for PlayBar */}
           
           {/* Playlist Section - Left 1/4 */}
           <PlaylistSidebar />
@@ -29,6 +30,9 @@ export default function Home() {
           </div>
           
         </div>
+        
+        {/* Play Bar at bottom */}
+        <PlayBar />
       </div>
     </GradientBackground>
   );

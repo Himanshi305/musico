@@ -45,10 +45,10 @@ export default function CircularSystem({ onColorChange }) {
 
   return (
     <div className="absolute z-10">
-      <div className="relative w-[700px] h-[700px]">
+      <div className="relative w-[560px] h-[560px]">
         {/* Circular border with dots - this rotates */}
         <div 
-          className="absolute top-[125px] left-[125px] w-[450px] h-[450px] border border-white/30 rounded-full transition-transform duration-500 ease-in-out"
+          className="absolute top-[100px] left-[100px] w-[360px] h-[360px] border border-black rounded-full transition-transform duration-500 ease-in-out"
           style={{ transform: `rotate(${rotation}deg)` }}
         >
           {/* Render dots */}
@@ -68,7 +68,7 @@ export default function CircularSystem({ onColorChange }) {
           // Calculate the position with rotation applied
           const baseAngle = index * 45;
           const rotatedAngle = (baseAngle - (selectedSquare * 45)) * (Math.PI / 180);
-          const radius = 120;
+          const radius = 96; // 120 * 0.8 = 96 (20% smaller)
           const x = Math.cos(rotatedAngle - Math.PI/2) * radius;
           const y = Math.sin(rotatedAngle - Math.PI/2) * radius;
           
@@ -98,11 +98,6 @@ export default function CircularSystem({ onColorChange }) {
             </div>
           );
         })}
-        
-        {/* Original circle centered inside */}
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-5">
-          <div className="circle h-100 w-100 border border-lg rounded-full"></div>
-        </div>
       </div>
     </div>
   );
