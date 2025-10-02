@@ -10,6 +10,7 @@ export default function PlaylistSidebar() {
 
   const [isCreating, setIsCreating] = useState(false);
   const [newPlaylistName, setNewPlaylistName] = useState('');
+  const [isOpen, setIsOpen] = useState(false); // For mobile hamburger menu
 
   // Load playlists from localStorage on component mount
   useEffect(() => {
@@ -75,11 +76,40 @@ export default function PlaylistSidebar() {
   };
 
   return (
-    <div className="w-1/4 bg-black/20 backdrop-blur-sm border-r border-white/10 p-6 overflow-y-auto custom-scrollbar">
-      <div className="text-white">
-        <h2 className="text-2xl font-bold mb-6 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
-          Playlists
-        </h2>
+    <>
+      {/* Hamburger Menu Button (Mobile Only) */}
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="fixed top-20 left-4 z-50 p-2 bg-black/60 backdrop-blur-sm rounded-lg border border-white/20 lg:hidden"
+      >
+        <div className="w-6 h-6 flex flex-col justify-center items-center">
+          <span className={`bg-white block transition-all duration-300 ease-out h-0.5 w-6 rounded-sm ${isOpen ? 'rotate-45 translate-y-1' : '-translate-y-0.5'}`}></span>
+          <span className={`bg-white block transition-all duration-300 ease-out h-0.5 w-6 rounded-sm my-0.5 ${isOpen ? 'opacity-0' : 'opacity-100'}`}></span>
+          <span className={`bg-white block transition-all duration-300 ease-out h-0.5 w-6 rounded-sm ${isOpen ? '-rotate-45 -translate-y-1' : 'translate-y-0.5'}`}></span>
+        </div>
+      </button>
+
+      {/* Overlay for mobile */}
+      {isOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
+
+      {/* Sidebar */}
+      <div className={`
+        fixed lg:relative top-16 lg:top-0 left-0 h-[calc(100vh-64px)] w-80 
+        bg-black/20 backdrop-blur-sm border-r border-white/10 p-6 
+        overflow-y-auto custom-scrollbar z-50 lg:z-auto
+        transform transition-transform duration-300 ease-in-out
+        ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+        lg:w-full lg:h-full
+      `}>
+        <div className="text-white">
+          <h2 className="text-2xl font-bold mb-6 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+            Playlists
+          </h2>
         
         {/* Playlist items */}
         <div className="space-y-3">
@@ -195,6 +225,7 @@ export default function PlaylistSidebar() {
           -ms-overflow-style: none;
         }
       `}</style>
-    </div>
+      </div>
+    </>
   );
 }

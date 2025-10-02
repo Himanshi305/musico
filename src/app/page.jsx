@@ -15,24 +15,36 @@ export default function Home() {
 
   return (
     <GradientBackground dynamicColor={selectedColor}>
-      <div className="min-h-screen relative pb-20"> {/* Added pb-20 for PlayBar space */}
+      <div className="min-h-screen relative"> 
         <Navbar />
         
-        {/* Main content area with sidebar */}
-        <div className="relative flex h-[calc(100vh-150px)] pt-16 left-4 top-5"> {/* Adjusted height for PlayBar */}
+        {/* Main layout */}
+        <div className="flex h-[calc(100vh-64px)] pt-16"> {/* Added pt-16 for navbar space */}
           
-          {/* Playlist Section - Left 1/4 */}
-          <PlaylistSidebar />
+          {/* Left Sidebar - Full height on desktop, starts below navbar, touches bottom */}
+          <div className="hidden lg:block w-80 h-[calc(100vh-64px)]">
+            <PlaylistSidebar />
+          </div>
           
-          {/* Main content area - Right 3/4 */}
-          <div className="flex-1 flex items-center justify-center">
-            <CircularSystem onColorChange={handleColorChange} />
+          {/* Mobile Sidebar (existing hamburger functionality) */}
+          <div className="lg:hidden">
+            <PlaylistSidebar />
+          </div>
+          
+          {/* Main content area - Right side */}
+          <div className="flex-1 relative h-[calc(100vh-64px)]">
+            {/* Center content */}
+            <div className="h-full flex items-center justify-center pb-20">
+              <CircularSystem onColorChange={handleColorChange} />
+            </div>
+            
+            {/* PlayBar positioned at bottom-right, touches bottom */}
+            <div className="absolute bottom-0 left-0 right-0">
+              <PlayBar />
+            </div>
           </div>
           
         </div>
-        
-        {/* Play Bar at bottom */}
-        <PlayBar />
       </div>
     </GradientBackground>
   );
